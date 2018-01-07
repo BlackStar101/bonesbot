@@ -1,0 +1,1 @@
+C:\Users\Gunner\AppData\Local\Programs\Python\Python36\python.exe BonesBot.py
