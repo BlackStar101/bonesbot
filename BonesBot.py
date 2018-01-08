@@ -8,16 +8,27 @@ import math
 import sys
 import os
 import traceback
+import time
 
 Client = discord.Client()
 bot_prefix= "!"
 client = commands.Bot(command_prefix=bot_prefix)
 
-runpass = input("Enter the Bot's Run Code: ")
+try:
+    f = open("pass.txt","r")
+except:
+    print('You need the bot\'s token in a TXT file called \"pass.txt\" for this code to connect to.')
+runpass = f.readlines()
+runpass = str(runpass)
+trtlrunpass = dict.fromkeys(map(ord, '[\']'), None)
+runpass = runpass.translate(trtlrunpass)
 
-boneshelp = '**BonesBot** version PRE-ALPHA 1 by GunnerBones \n\n**!anysizelist <list size>** Gets a player\'s score based on ANY list size\n**!yes** Does nothing.'
+
+boneshelp = '**BonesBot** version PRE-ALPHA 1 by GunnerBones \n\n**!anysizelist <list size>** Gets a player\'s score based on ANY list size\n**!yes** Does nothing.\n**!rainbowrole** Creates a role with a rainbow color! Use **!activaterb** to turn on rainbow effect everytime BonesBot restarts.'
 
 # Global Methods
+
+rbrl = None
 
 def is_int(a):
     try:
@@ -29,7 +40,7 @@ def is_int(a):
 
 def check_all_perms():
     print()
-    print('All servers connected to with permissions:')
+    print('All servers connected to with roles:')
     for server in client.servers:
         hrole = server.me.top_role
         print(server.name + ': ' + str(hrole))
@@ -47,6 +58,15 @@ def serverstats():
     for server in client.servers:
         try:
             servname = 'bonesbot-' + server.id + '-hasdl.txt'
+            f = open(servname,'a')
+            sortsn = 'serverstats/' + servname
+            f.close()
+            os.rename(servname,sortsn)
+        except:
+            os.remove(servname)
+    for server in client.servers:
+        try:
+            servname = 'bonesbot-' + server.id + '-rb.txt'
             f = open(servname,'a')
             sortsn = 'serverstats/' + servname
             f.close()
@@ -72,6 +92,23 @@ def hasadmin(message):
     if foundadmin == False:
         return False
 
+def rbcycle(message):
+    rbfn = 'serverstats/bonesbot-' + message.server.id + '-rb.txt'
+    f = open(rbfn,"r")
+    if f.readlines() == "":
+        f.close()
+        return False
+    else:
+        f.close()
+        return True
+
+roledefault = discord.Color.default()
+rolered = discord.Color.red()
+roleorange = discord.Color.orange()
+roleyellow = discord.Color.gold()
+rolegreen = discord.Color.green()
+roleblue = discord.Color.dark_blue()
+rolepurple = discord.Color.purple()
 # The Fun Stuff
 
 @client.event
@@ -91,6 +128,40 @@ async def on_message(message):
         await client.add_reaction(message, '🇪')
     if message.content == '!yes':
         await client.send_message(message.channel,'I want to die')
+    if message.content == '!rainbowrole':
+        if hasadmin(message) == False:
+            await client.send_message(message.channel, "**" + str(message.author) + "**, you do not have permissions to use this command!")
+        else:
+            try:
+                rbrlnum = random.randint(1,1000)
+                rbrlname = 'RainbowRole' + str(rbrlnum)
+                await client.create_role(server=message.server,name=rbrlname)
+                rbrl = None
+                for role in message.server.roles:
+                    if str(role.name) == "new role":
+                        rbrl = role.id
+                        await client.edit_role(server=message.server,role=role,color=rolered)
+                        await client.edit_role(server=message.server,role=role,mentionable=True)
+            except Exception as e:
+                await client.send_message(message.channel, "**" + str(
+                    message.author) + "**, BonesBot does not have permissions to preform this!")
+                print(e)
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                print(exc_traceback.tb_lineno)
+            rbfn = 'serverstats/bonesbot-' + message.server.id + '-rb.txt'
+            f = open(rbfn,"r")
+            if len(str(f.readlines())) > 5:
+                await client.send_message(message.channel, "**" + str(message.author) + "**, there already exists a Rainbow Role!")
+                for role in message.server.roles:
+                    if str(role.name) == "new role":
+                        await client.delete_role(server=message.server,role=role)
+                f.close()
+            else:
+                f.close()
+                f = open(rbfn,"a")
+                f.write(str(rbrl))
+                f.close()
+                await client.send_message(message.channel, "**" + str(message.author) + "**, role created!")
     if '!anysizelist' in message.content:
         whilemetdone = False
         alslist = []
@@ -206,6 +277,41 @@ async def on_message(message):
                     await client.send_message(id=identopsubmit,content='Here you can submit entries for the **Top ' + str(retvalmain) + '** List!')
                     await client.pin_message(content='Here you can submit entries for the **Top ' + str(retvalmain) + '** List!')
                     await client.send_message(message.channel,'Created Top ' + str(retvalmain) + ' List!')
-
-
+    if message.content == '!activaterb':
+        if rbcycle(message) == True:
+            rbacstop = False
+            print('Rainbow Role activated for Server \"' + str(message.server.name) + '\"')
+            rbfn = 'serverstats/bonesbot-' + message.server.id + '-rb.txt'
+            f = open(rbfn, "r")
+            rbid = str(f.readlines())
+            rbid = rbid.translate(trtlrunpass)
+            for role in message.server.roles:
+                if role.id == rbid:
+                    f.close()
+                    while rbcycle(message) == True and rbacstop == False:
+                        try:
+                            if role.color == rolered:
+                                time.sleep(0.3)
+                                await client.edit_role(server=message.server, role=role, color=roleorange)
+                            if role.color == roleorange:
+                                time.sleep(0.3)
+                                await client.edit_role(server=message.server, role=role, color=roleyellow)
+                            if role.color == roleyellow:
+                                time.sleep(0.3)
+                                await client.edit_role(server=message.server, role=role, color=rolegreen)
+                            if role.color == rolegreen:
+                                time.sleep(0.3)
+                                await client.edit_role(server=message.server, role=role, color=roleblue)
+                            if role.color == roleblue:
+                                time.sleep(0.3)
+                                await client.edit_role(server=message.server, role=role, color=rolepurple)
+                            if role.color == rolepurple:
+                                time.sleep(0.3)
+                                await client.edit_role(server=message.server, role=role, color=rolered)
+                            if role.color == roledefault:
+                                time.sleep(0.3)
+                                await client.edit_role(server=message.server, role=role, color=rolered)
+                        except:
+                            await client.send_message(message.server,"BonesBot does not have permissions to activate the rainbow effect (This is usually when the role is higher ranking than BonesBot)")
+                            rbacstop = True
 client.run(runpass)
