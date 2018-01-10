@@ -102,6 +102,9 @@ def rbcycle(message):
         f.close()
         return True
 
+
+
+
 roledefault = discord.Color.default()
 rolered = discord.Color.red()
 roleorange = discord.Color.orange()
@@ -124,6 +127,7 @@ async def on_ready():
     sctname = "on " + str(sct) + " servers!"
     sctg = discord.Game(name=sctname)
     await client.change_presence(game=sctg)
+
 
 
 @client.event
@@ -266,9 +270,17 @@ async def on_message(message):
                         potoplist.external_emojis = False
                         potoplist.add_reactions = False
                         await client.create_channel(server=message.server,name=nametoplist)
-                        await client.edit_channel_permissions(name=nametoplist,role="@everyone",overwrite=potoplist)
+                        for channel in message.server.channels:
+                            if channel.name == nametoplist:
+                                for role in message.server.roles:
+                                    if role.name == '@everyone':
+                                        await client.edit_channel_permissions(channel,role,potoplist)
                         await client.create_channel(server=message.server,name=nametopplayers)
-                        await client.edit_channel_permissions(name=nametopplayers,role="@everyone", overwrite=potoplist)
+                        for channel in message.server.channels:
+                            if channel.name == nametopplayers:
+                                for role in message.server.roles:
+                                    if role.name == '@everyone':
+                                        await client.edit_channel_permissions(channel,role,potoplist)
                         await client.create_channel(server=message.server,name=nametopsubmit)
                     except Exception as e:
                         await client.send_message(message.channel,"**" + str(message.author) + "**, BonesBot does not have permissions to preform this!")
@@ -278,7 +290,8 @@ async def on_message(message):
                     servdlname = 'serverstats/bonesbot-' + message.server.id + '-demonlist.txt'
                     f = open(servdlname,'a')
                     dlist = []
-                    for i in range(1,retvalmain):
+                    rme = retvalmain + 1
+                    for i in range(1,rme):
                         dlist.append(str(i) + '. ')
                     plistnames = []
                     plistscores = []
@@ -286,22 +299,21 @@ async def on_message(message):
                     f.close()
                     f = open(servdlname,'r')
                     dlmsg = '**Top ' + str(retvalmain) + '** Demon List:\n'
-                    identoplist = None
-                    identopplayers = None
-                    identopsubmit = None
                     for i in dlist:
                         dlmsg = dlmsg + str(i) + '\n'
-                    for i in client.get_all_channels():
-                        if i.name == nametoplist:
-                            identoplist = i.id
-                        elif i.name == nametopplayers:
-                            identopplayers = i.id
-                        elif i.name == nametopsubmit:
-                            identopsubmit = i.id
-                    await client.send_message(id=identoplist,content=dlmsg)
-                    await client.send_message(id=identopplayers,content='**Top ' + str(retvalmain) + '** Player\'s List:\n')
-                    await client.send_message(id=identopsubmit,content='Here you can submit entries for the **Top ' + str(retvalmain) + '** List!')
-                    await client.pin_message(content='Here you can submit entries for the **Top ' + str(retvalmain) + '** List!')
+                    time.sleep(1)
+                    for channel in list(message.server.channels):
+                        if channel.name == nametoplist:
+                            await client.send_message(channel,dlmsg)
+                    time.sleep(1)
+                    for channel in list(message.server.channels):
+                        if channel.name == nametopplayers:
+                            await client.send_message(channel,'**Top ' + str(retvalmain) + '** Player\'s List:\n')
+                    time.sleep(1)
+                    for channel in list(message.server.channels):
+                        if channel.name == nametopsubmit:
+                            await client.send_message(channel,'Here you can submit entries for the **Top ' + str(retvalmain) + '** List!')
+                    await client.pin_message('Here you can submit entries for the **Top ' + str(retvalmain) + '** List!')
                     await client.send_message(message.channel,'Created Top ' + str(retvalmain) + ' List!')
     if message.content == '!activaterb':
         if rbcycle(message) == True:
@@ -340,4 +352,8 @@ async def on_message(message):
                         except:
                             await client.send_message(message.server,"BonesBot does not have permissions to activate the rainbow effect (This is usually when the role is higher ranking than BonesBot)")
                             rbacstop = True
+
+
+
+
 client.run(runpass)
