@@ -24,7 +24,7 @@ trtlrunpass = dict.fromkeys(map(ord, '[\']'), None)
 runpass = runpass.translate(trtlrunpass)
 
 
-boneshelp = '**BonesBot** version PRE-ALPHA 1 by GunnerBones \n\n**!anysizelist <list size>** Gets a player\'s score based on ANY list size\n**!yes** Does nothing.\n**!rainbowrole** Creates a role with a rainbow color! Use **!activaterb** to turn on rainbow effect everytime BonesBot restarts.'
+boneshelp = '**BonesBot** version PRE-ALPHA 1 by GunnerBones \n\n**!anysizelist <list size>** Gets a player\'s score based on ANY list size\n**!yes** Does nothing.\n**!rainbowrole** Creates a role with a rainbow color! Use **!activaterb** to turn on rainbow effect everytime BonesBot restarts.\n**!randomuser** Returns a random user in this server'
 
 # Global Methods
 
@@ -118,6 +118,12 @@ async def on_ready():
     print("ID: {}".format(client.user.id))
     check_all_perms()
     serverstats()
+    sct = 0
+    for server in client.servers:
+        sct += 1
+    sctname = "on " + str(sct) + " servers!"
+    sctg = discord.Game(name=sctname)
+    await client.change_presence(game=sctg)
 
 
 @client.event
@@ -200,6 +206,26 @@ async def on_message(message):
             await client.send_message(message.channel,"You have a score of " + str(endscr) + '!')
     if '!bonesbothelp' in message.content:
         await client.send_message(message.channel,boneshelp)
+    if message.server == None:
+        repllist = ["No","Stay away from me and my flowers","Do you know de wae?","We have to go back","Die","gmd go","Ok","Innards when","If you need help type !bonesbothelp in your server with me"]
+        replnum = 0
+        for i in repllist:
+            replnum +=1
+        replrs = repllist[random.randint(0,replnum)]
+        try:
+            await client.send_message(message.author,replrs)
+        except:
+            print('Something went wrong trying to message ' + str(message.author))
+    if '!randomuser' in message.content:
+        rmsel = 0
+        for member in message.server.members:
+            rmsel += 1
+        rmnum = random.randint(1,rmsel)
+        rmfind = 0
+        for member in message.server.members:
+            rmfind += 1
+            if rmfind == rmnum:
+                await client.send_message(message.channel,"I choose " + str(member))
     if '!createtoplist' in message.content:
         if hasadmin(message) == False:
             await client.send_message(message.channel, "**" + str(message.author) + "**, you do not have permissions to use this command!")
