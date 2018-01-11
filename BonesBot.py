@@ -210,6 +210,8 @@ async def on_message(message):
             await client.send_message(message.channel,"You have a score of " + str(endscr) + '!')
     if '!bonesbothelp' in message.content:
         await client.send_message(message.channel,boneshelp)
+    if "<@384151022555103232>" in message.content:
+        await client.send_message(message.channel,'Who the fuck tagged me')
     if message.server == None:
         repllist = ["No","Stay away from me and my flowers","Do you know de wae?","We have to go back","Die","gmd go","Ok","Innards when","If you need help type !bonesbothelp in your server with me"]
         replnum = 0
@@ -230,6 +232,16 @@ async def on_message(message):
             rmfind += 1
             if rmfind == rmnum:
                 await client.send_message(message.channel,"I choose " + str(member))
+    if '!deletetoplist' in message.content:
+        if hasadmin(message) == False:
+            await client.send_message(message.channel, "**" + str(message.author) + "**, you do not have permissions to use this command!")
+        else:
+            servfn = 'serverstats/bonesbot-' + message.server.id + '-hasdl.txt'
+            f = open(servfn,'r')
+            if 'yes' in f.readlines():
+
+            else:
+                await client.send_message
     if '!createtoplist' in message.content:
         if hasadmin(message) == False:
             await client.send_message(message.channel, "**" + str(message.author) + "**, you do not have permissions to use this command!")
@@ -242,15 +254,19 @@ async def on_message(message):
             retvalmain = message.content[len('!createtoplist'):].strip()
             if retvalmain == '':
                 await client.send_message(message.channel, "**" + str(message.author) + "**, no argument provided!")
+                f.close()
             elif is_int(retvalmain) == False:
                 await client.send_message(message.channel, "**" + str(message.author) + "**, invalid argument!")
+                f.close()
             elif int(retvalmain) < 5:
                 await client.send_message(message.channel, "**" + str(message.author) + "**, the list needs to be greater than 5!")
+                f.close()
             else:
                 retvalmain = int(retvalmain)
                 if 'yes' in f.readlines():
                     await client.send_message(message.channel, "**" + str(
                         message.author) + "**, a demon list already exists on this server!")
+                    f.close()
                 else:
                     try:
                         f.close()
@@ -273,13 +289,13 @@ async def on_message(message):
                         for channel in message.server.channels:
                             if channel.name == nametoplist:
                                 for role in message.server.roles:
-                                    if role.name == '@everyone':
+                                    if role.is_everyone == True:
                                         await client.edit_channel_permissions(channel,role,potoplist)
                         await client.create_channel(server=message.server,name=nametopplayers)
                         for channel in message.server.channels:
                             if channel.name == nametopplayers:
                                 for role in message.server.roles:
-                                    if role.name == '@everyone':
+                                    if role.is_everyone == True:
                                         await client.edit_channel_permissions(channel,role,potoplist)
                         await client.create_channel(server=message.server,name=nametopsubmit)
                     except Exception as e:
@@ -312,8 +328,11 @@ async def on_message(message):
                     time.sleep(1)
                     for channel in list(message.server.channels):
                         if channel.name == nametopsubmit:
-                            await client.send_message(channel,'Here you can submit entries for the **Top ' + str(retvalmain) + '** List!')
-                    await client.pin_message('Here you can submit entries for the **Top ' + str(retvalmain) + '** List!')
+                            ntsmes = discord.message
+                            ntsmes.channel = channel
+                            ntsmes.content = 'Here you can submit entries for the **Top ' + str(retvalmain) + '** List!'
+                            await client.send_message(ntsmes.channel,ntsmes.content)
+                    await client.pin_message(ntsmes.id)
                     await client.send_message(message.channel,'Created Top ' + str(retvalmain) + ' List!')
     if message.content == '!activaterb':
         if rbcycle(message) == True:
