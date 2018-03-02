@@ -9,7 +9,10 @@ import sys
 import os
 import traceback
 import time
+<<<<<<< HEAD
 
+=======
+>>>>>>> e29d7d853264c72c489288c8f70fe07e75421fa2
 
 Client = discord.Client()
 bot_prefix= "!"
@@ -26,6 +29,11 @@ runpass = runpass.translate(trtlrunpass)
 
 
 boneshelp = '**BonesBot** version PRE-ALPHA 2 by GunnerBones \n\n**!anysizelist <list size>** Gets a player\'s score based on ANY list size\n**!createtoplist <size>** Creates your own Top List for demons!\n**!deletetoplist** Deletes the list\n**!yes** Does nothing.\n**!rainbowrole** Creates a role with a rainbow color! Use **!activaterb** to turn on rainbow effect everytime BonesBot restarts.\n**!randomuser** Returns a random user in this server'
+=======
+
+
+boneshelp = '**BonesBot** version PRE-ALPHA 1 by GunnerBones \n\n**!anysizelist <list size>** Gets a player\'s score based on ANY list size\n**!yes** Does nothing.\n**!rainbowrole** Creates a role with a rainbow color! Use **!activaterb** to turn on rainbow effect everytime BonesBot restarts.\n**!randomuser** Returns a random user in this server'
+>>>>>>> e29d7d853264c72c489288c8f70fe07e75421fa2
 
 # Global Methods
 
@@ -173,6 +181,7 @@ async def on_message(message):
                 f.write(str(rbrl))
                 f.close()
                 await client.send_message(message.channel, "**" + str(message.author) + "**, role created!")
+<<<<<<< HEAD
     if '!stock' in message.content:
         def check(msg):
             return msg.content.startswith('!stock')
@@ -182,6 +191,8 @@ async def on_message(message):
             await client.send_message(message.channel,"**" + str(message.author) + "**, no arguments provided!")
         else:
             await client.send_message(message.channel,"this command is broken atm lol")
+=======
+>>>>>>> e29d7d853264c72c489288c8f70fe07e75421fa2
     if '!anysizelist' in message.content:
         whilemetdone = False
         alslist = []
@@ -249,6 +260,7 @@ async def on_message(message):
             servfn = 'serverstats/bonesbot-' + message.server.id + '-hasdl.txt'
             f = open(servfn,'r')
             if 'yes' in f.readlines():
+<<<<<<< HEAD
                 f.close()
                 f = open(servfn,'a')
                 f.truncate()
@@ -270,6 +282,11 @@ async def on_message(message):
             else:
                 await client.send_message(message.channel,'**' + str(message.author) + "**, there is no demon list to delete!")
                 f.close()
+=======
+
+            else:
+                await client.send_message
+>>>>>>> e29d7d853264c72c489288c8f70fe07e75421fa2
     if '!createtoplist' in message.content:
         if hasadmin(message) == False:
             await client.send_message(message.channel, "**" + str(message.author) + "**, you do not have permissions to use this command!")
@@ -358,6 +375,7 @@ async def on_message(message):
                         if channel.name == nametopsubmit:
                             ntsmes = discord.message
                             ntsmes.channel = channel
+<<<<<<< HEAD
                             ntsmes.id = 1234
                             ntsmes.content = 'Here you can submit entries for the **Top ' + str(retvalmain) + '** List!'
                             await client.send_message(ntsmes.channel,ntsmes.content)
@@ -471,6 +489,11 @@ async def on_message(message):
                         await client.send_message(cmadtl.channel,"**" + str(cmadtl.author) + "**, added *" + retvaln + "* to #" + str(retvalpl) + ".")
             else:
                 await client.send_message(message.channel,'**' + str(message.author) + "**, there is no demon list!")
+=======
+                            await client.send_message(ntsmes.channel,ntsmes.content)
+                    await client.pin_message(ntsmes.id)
+                    await client.send_message(message.channel,'Created Top ' + str(retvalmain) + ' List!')
+>>>>>>> e29d7d853264c72c489288c8f70fe07e75421fa2
     if message.content == '!activaterb':
         if rbcycle(message) == True:
             rbacstop = False
